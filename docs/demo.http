@@ -1,0 +1,31 @@
+
+### Get the status
+GET http://localhost:1337/status HTTP/1.1
+
+
+### Get An Employee
+
+GET http://localhost:1337/employees/201 HTTP/1.1
+
+
+### Get All Employees
+
+GET http://localhost:1337/employees HTTP/1.1
+
+
+### Get All Employees in a department
+
+GET http://localhost:1337/employees?dept=SALES HTTP/1.1
+
+
+### Add An Employee
+POST http://localhost:1337/employees HTTP/1.1
+Content-Type: application/json
+
+{
+    "firstName": "Bob",
+    "lastName": "Smith",
+    "dept": "DEV",
+    "salary": 180000
+}
+
