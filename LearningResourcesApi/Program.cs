@@ -1,4 +1,6 @@
+using LearningResourcesApi.Data;
 using LearningResourcesApi.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,11 @@ builder.Services.AddSwaggerGen();
 
 // Managing the lifetime of the dependency.
 builder.Services.AddTransient<ISystemTime, SystemTime>();
+
+builder.Services.AddDbContext<LearningResourcesDataContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("resources"));
+});
 
 var app = builder.Build();
 
