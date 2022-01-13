@@ -1,40 +1,58 @@
-﻿using LearningResourcesApi.Models;
+﻿using LearningResourcesApi.Data;
+using LearningResourcesApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningResourcesApi.Controllers;
 
 public class LearningResourcesController : ControllerBase
 {
+    private readonly LearningResourcesDataContext _context;
+
+    public LearningResourcesController(LearningResourcesDataContext context)
+    {
+        _context = context;
+    }
 
     [HttpGet("learning-resources/{id:int}")]
     public ActionResult<GetLearningResourceResponse> GetALearningResource(int id)
     {
-        if (id % 2 != 0) return NotFound();
-        // do we have a resource that matches id in the database?
-        // if yes - send it to them
-        var response = new GetLearningResourceResponse
+        var resource = _context.LearningResources
+            .Where(r => r.Id == id && r.Removed == false)
+            .Select(r => new GetLearningResourceResponse
+            {
+                Id = r.Id,
+                Title = r.Title,
+                Description = r.Description
+
+            })
+            .SingleOrDefault();
+
+        if(resource != null)
         {
-            Id = id,
-            Title = "Web Apis",
-            Description = "Build yerself an API",
-            Link = "http://blah.com"
-        };
-        return Ok(response);
-        // if no - send a 404.
+            return Ok(resource);
+        } else
+        {
+            return NotFound();
+        }
+
     }
 
     [HttpGet("/learning-resources")]
     public ActionResult<GetLearningResourceCollectionResponse> GetAll()
     {
+        var data = _context.LearningResources.Where(r => r.Removed == false)
+            .Select(r => new LearningResourceSummaryItem
+            {
+                Id = r.Id,
+                Title = r.Title
+            }).ToList();
+
         var response = new GetLearningResourceCollectionResponse
         {
-            Data = new List<LearningResourceSummaryItem>
-            {
-                new LearningResourceSummaryItem { Id = 1, Title = "Git Stuff"},
-                new LearningResourceSummaryItem { Id = 2, Title = "Go Programming"}
-            }
+            Data = data
         };
         return Ok(response);
+
     }
 
     
