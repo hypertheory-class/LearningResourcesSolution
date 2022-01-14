@@ -1,4 +1,6 @@
+using AutoMapper;
 using LearningResourcesApi.Data;
+using LearningResourcesApi.Profiles;
 using LearningResourcesApi.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +22,17 @@ builder.Services.AddDbContext<LearningResourcesDataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("resources"));
 });
+
+var mapperConfiguration = new MapperConfiguration((config) =>
+{
+    config.AddProfile<LearningResourcesProfile>();
+    // more profiles.
+});
+
+var mapper = mapperConfiguration.CreateMapper();
+
+builder.Services.AddSingleton<MapperConfiguration>(mapperConfiguration);
+builder.Services.AddSingleton<IMapper>(mapper);
 
 var app = builder.Build();
 

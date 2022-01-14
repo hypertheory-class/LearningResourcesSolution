@@ -1,16 +1,21 @@
-﻿using LearningResourcesApi.Data;
+﻿using AutoMapper;
+using LearningResourcesApi.Data;
 using LearningResourcesApi.Models;
 using Microsoft.AspNetCore.Mvc;
-
+using AutoMapper.QueryableExtensions;
 namespace LearningResourcesApi.Controllers;
 
 public class LearningResourcesController : ControllerBase
 {
     private readonly LearningResourcesDataContext _context;
+    private readonly IMapper _mapper;
+    private readonly MapperConfiguration _config;
 
-    public LearningResourcesController(LearningResourcesDataContext context)
+    public LearningResourcesController(LearningResourcesDataContext context, IMapper mapper, MapperConfiguration config)
     {
         _context = context;
+        _mapper = mapper;
+        _config = config;
     }
 
     [HttpGet("learning-resources/{id:int}")]
@@ -18,13 +23,7 @@ public class LearningResourcesController : ControllerBase
     {
         var resource = _context.LearningResources
             .Where(r => r.Id == id && r.Removed == false)
-            .Select(r => new GetLearningResourceResponse
-            {
-                Id = r.Id,
-                Title = r.Title,
-                Description = r.Description
-
-            })
+            .ProjectTo<GetLearningResourceResponse>(_config)
             .SingleOrDefault();
 
         if(resource != null)
@@ -41,11 +40,8 @@ public class LearningResourcesController : ControllerBase
     public ActionResult<GetLearningResourceCollectionResponse> GetAll()
     {
         var data = _context.LearningResources.Where(r => r.Removed == false)
-            .Select(r => new LearningResourceSummaryItem
-            {
-                Id = r.Id,
-                Title = r.Title
-            }).ToList();
+           .ProjectTo<LearningResourceSummaryItem>(_config)
+            .ToList();
 
         var response = new GetLearningResourceCollectionResponse
         {
