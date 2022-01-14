@@ -3,6 +3,8 @@ using LearningResourcesApi.Data;
 using LearningResourcesApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
+
 namespace LearningResourcesApi.Controllers;
 
 public class LearningResourcesController : ControllerBase
@@ -19,7 +21,7 @@ public class LearningResourcesController : ControllerBase
     }
 
     [HttpPost("learning-resources")]
-    public ActionResult AddALearningResource([FromBody] PostLearningResourceRequest request)
+    public async Task<ActionResult> AddALearningResourceAsync([FromBody] PostLearningResourceRequest request)
     {
         // Validate the incoming data.
         if(!ModelState.IsValid)
@@ -34,7 +36,7 @@ public class LearningResourcesController : ControllerBase
         //    Add it to the DbSet
         _context.LearningResources.Add(learningResource);
         //    Save the Changes
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         // Response:
         // 201 - "Created"
@@ -48,12 +50,12 @@ public class LearningResourcesController : ControllerBase
 
 
     [HttpGet("learning-resources/{id:int}", Name ="learningresources-getalearningresource")]
-    public ActionResult<GetLearningResourceResponse> GetALearningResource(int id)
+    public async Task<ActionResult<GetLearningResourceResponse>> GetALearningResourceAsync(int id)
     {
-        var resource = _context.LearningResources
+        var resource = await _context.LearningResources
             .Where(r => r.Id == id && r.Removed == false)
             .ProjectTo<GetLearningResourceResponse>(_config)
-            .SingleOrDefault();
+            .SingleOrDefaultAsync();
 
         if(resource != null)
         {
@@ -66,11 +68,11 @@ public class LearningResourcesController : ControllerBase
     }
 
     [HttpGet("/learning-resources")]
-    public ActionResult<GetLearningResourceCollectionResponse> GetAll()
+    public async Task<ActionResult<GetLearningResourceCollectionResponse>> GetAllAsync()
     {
-        var data = _context.LearningResources.Where(r => r.Removed == false)
+        var data = await _context.LearningResources.Where(r => r.Removed == false)
            .ProjectTo<LearningResourceSummaryItem>(_config)
-            .ToList();
+            .ToListAsync();
 
         var response = new GetLearningResourceCollectionResponse
         {
