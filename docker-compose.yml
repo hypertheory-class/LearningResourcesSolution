@@ -1,0 +1,14 @@
+version: "3"
+services:
+  api:
+    image: jeffrygonzalez/learning-resource-api:v0.1
+    ports:
+      - 1337:80
+    environment:
+      - ConnectionStrings__resources=server=sql;database=learning_prod;user=sa;password=TokyoJoe138!
+  
+  sql:
+    image: jeffrygonzalez/sql-intro-to-programming-jan2022:v1.0
+    ports: 
+      - 1433:1433
+    

@@ -1,8 +1,24 @@
 ### Get a Learning Resource
 
-GET http://localhost:1337/learning-resources/2 HTTP/1.1
-
+GET http://localhost:1337/learning-resources/1 HTTP/1.1
+Accept: application/json
 
 ### Get them all
 
-GET http://localhost:1337/learning-resources HTTP/1.2
+GET http://localhost:1337/learning-resources HTTP/1.1
+Accept: application/json
+
+
+### Add a Learning Resource
+
+POST http://localhost:1337/learning-resources HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "Async/Await",
+  "description": "Video",
+  "link": "http://asyncwait-book.com"
+}
+
+
