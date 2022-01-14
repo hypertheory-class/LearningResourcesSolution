@@ -18,7 +18,36 @@ public class LearningResourcesController : ControllerBase
         _config = config;
     }
 
-    [HttpGet("learning-resources/{id:int}")]
+    [HttpPost("learning-resources")]
+    public ActionResult AddALearningResource([FromBody] PostLearningResourceRequest request)
+    {
+        // Validate the incoming data.
+        if(!ModelState.IsValid)
+        {
+        // If it is bad, send a 400 Response, optionally give them some clue as to what they did wrong.
+            return BadRequest(ModelState);
+        }
+        // If It is Good:
+        // -- Add a new LearningResource to the Database (we have a PostLearningResourceRequest
+        //    Map it to a LearningResource
+        var learningResource = _mapper.Map<LearningResource>(request);
+        //    Add it to the DbSet
+        _context.LearningResources.Add(learningResource);
+        //    Save the Changes
+        _context.SaveChanges();
+
+        // Response:
+        // 201 - "Created"
+        // You send them the URL of the new resource. 
+        //   -- adding a Location header to the response (e.g. Location: http://localhost:1337/learning-resources/13)
+        //   -- Send them a copy of EXACTLY what they'd get if they went to the location URL.
+        var response = _mapper.Map<GetLearningResourceResponse>(learningResource);
+        return CreatedAtRoute("learningresources-getalearningresource", new { id = response.Id }, response);
+
+    }
+
+
+    [HttpGet("learning-resources/{id:int}", Name ="learningresources-getalearningresource")]
     public ActionResult<GetLearningResourceResponse> GetALearningResource(int id)
     {
         var resource = _context.LearningResources

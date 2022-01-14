@@ -10,5 +10,7 @@ public class LearningResourcesProfile : Profile
     {
         CreateMap<LearningResource, GetLearningResourceResponse>();
         CreateMap<LearningResource, LearningResourceSummaryItem>();
+        CreateMap<PostLearningResourceRequest, LearningResource>()
+            .ForMember(dest => dest.Removed, conf => conf.MapFrom((_) => false));
     }
 }
